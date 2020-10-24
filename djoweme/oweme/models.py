@@ -22,4 +22,6 @@ class Debts(models.Model):
     amount = models.DecimalField(decimal_places=5, max_digits=10)
 
 class PayDebt(models.Model):
-    debt = models.ForeignKey(Debts, on_delete=models.CASCADE)
+    one = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="payone") # if user is deleted they dont escape their debts lol
+    two = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="paytwo")
+    amount = models.DecimalField(decimal_places=5, max_digits=10)

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -23,19 +24,12 @@ def home(request):
     })
 
 def pay_debt(request, to=None):
-    debts = Debts.objects.filter(one=request.user, amount__gt=0) | Debts.objects.filter(two=request.user, amount__lt=0)
-
     if to:
-        debt = Debts.objects.filter(one=request.user, two__username=to, amount__gt=0) | Debts.objects.filter(one__username=to, two=request.user, amount__lt=0)
-        if debt.exists():
-            debt = debt.first()
-            if not PayDebt.objects.filter(debt=debt):
-                paid = PayDebt(debt=debt)
-                paid.save()
+        if not PayDebt.objects.filter(one=request.user, two__username=to).exists():
+            pay_debt = PayDebt(one=request.user, two=User.objects.get(username=to), amount=request.POST["amount"])
 
     return render(request, "pay-debt.html", {
         "to": to,
-        "debts": debts,
     })
 
 def purchase(request, group_name=None):
