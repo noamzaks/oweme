@@ -4,25 +4,71 @@
 Purchase
 {% endblock %}
 
+{% block navigation %}
+    {% with "purchase" as active %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
 {% block content %}
     {% if not group_name %}
-        <h2>
-        Go to your own purchase page!
-        </h2>
+        <main role="main" class="container text-center col-lg-5">
+            <h2>
+            Go to your own purchase page!
+            </h2>
 
-        <script>
-            function go() {
-                window.location.href = "./" + document.getElementById("page").value;
-            }
-        </script>
+            <script>
+                function go() {
+                    window.location.href = "./" + document.getElementById("page").value;
+                }
+            </script>
 
-        <input type="text" id="page" required>
-        <button onclick="go();">
-            Go!
-        </button>
+            <div class="input-group width-4">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Name</span>
+                </div>
+                <input class="form-control" type="text" id="page" width=20 required>
+            </div>
+            <br />
+            <button class="btn btn-primary" onclick="go();">
+                Go!
+            </button>
+        </main>
     {% else %}
-        {% for user in users %}
-            {{ user.coin_set.all }}
-        {% endfor %}
+        <main role="main" class="container text-center col-lg-5">
+            <table class="table table-dark">
+                <thead class="rounded">
+                    <tr>
+                    <th scope="col">User</th>
+                    <th scope="col">Coins</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user, coins in users %}
+                        <tr>
+                            <th scope="row">{{ user.get_full_name }}</th>
+                            <td>
+                                {% for coin in coins %}
+                                    {{ coin }}
+                                    <br/>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <form method="POST" class="mt-2 container col-lg-3">
+                {% csrf_token %}
+                <input class="form-control mb-2" type="number" step=0.01 name="amount" placeholder="Amount" required>
+                <button type="submit" class="btn btn-dark w-100">
+                    Add Coin
+                </button>
+            </form>
+
+            <button class="btn btn-primary mt-4" onclick="window.location.reload();">
+                Refresh Page
+            </button>
+        </main>
     {% endif %}
 {% endblock %}
