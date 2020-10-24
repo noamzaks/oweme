@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}
+Purchase
+{% endblock %}
+
+{% block content %}
+    {% if not group_name %}
+        <h2>
+        Go to your own purchase page!
+        </h2>
+
+        <script>
+            function go() {
+                window.location.href = "./" + document.getElementById("page").value;
+            }
+        </script>
+
+        <input type="text" id="page" required>
+        <button onclick="go();">
+            Go!
+        </button>
+    {% else %}
+    Working on it!!!
+    {% endif %}
+{% endblock %}
