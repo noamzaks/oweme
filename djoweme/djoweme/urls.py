@@ -16,11 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from oweme.views import home, purchase, SignUpView
+from oweme.views import home, purchase, pay_debt, SignUpView
 
 urlpatterns = [
     path('', home),
     path('admin/', admin.site.urls),
+    path('pay-debt/', pay_debt),
+    path('pay-debt/<str:to>', pay_debt),
     path('purchase/', purchase),
     path('purchase/<str:group_name>', purchase),
     path('accounts/', include('django.contrib.auth.urls')),

@@ -49,8 +49,20 @@ Purchase
                             <th scope="row">{{ user.get_full_name }}</th>
                             <td>
                                 {% for coin in coins %}
-                                    {{ coin }}
-                                    <br/>
+                                    {% if user == request.user %}
+                                        <form method="POST">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-light mb-1">
+                                                {{ coin }}
+                                            </button>
+                                            <input type="hidden" value="{{ coin }}" name="coin">
+                                        </form>
+                                    {% else %}
+                                        <button class="btn btn-light mb-1" disabled>
+                                            {{ coin }}
+                                        </button>
+                                        <br />
+                                    {% endif %}
                                 {% endfor %}
                             </td>
                         </tr>
@@ -63,7 +75,17 @@ Purchase
                 <input class="form-control mb-2" type="number" step=0.01 name="amount" placeholder="Amount" required>
                 <button type="submit" class="btn btn-dark w-100">
                     Add Coin
+                    <i class="fas fa-coins ml-1"></i>
                 </button>
+            </form>
+
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary mt-4">
+                    Complete Purchase
+                    <i class="fas fa-cash-register ml-1"></i>
+                </button>
+                <input type="hidden" value="complete_purchase" name="complete_purchase">
             </form>
 
             <button class="btn btn-primary mt-4" onclick="window.location.reload();">

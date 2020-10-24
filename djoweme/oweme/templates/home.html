@@ -8,5 +8,34 @@ Owe Me
     <main role="main" class="container text-center">
             <h1>Owe Me</h1>
             Paying for pizza. Together.
+            <br />
+            
+            {% for request in pay_debt_requests %}
+                <div class="alert alert-success mt-3" role="alert">
+                    {% if request.debt.one == request.user %}
+                        {{ request.debt.one.get_full_name }} is requesting you to fulfill their debt of {{ request.debt.amount|cut:"-" }} coins.
+                    {% else %}
+                        {{ request.debt.two.get_full_name }} is requesting you to fulfill their debt of {{ request.debt.amount|cut:"-" }} coins.
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button type="send" class="btn btn-success mt-2 mb-2">
+                            Accept
+                        </button>
+                        <input type="hidden" value="accept" name="answer_request">
+                        <input type="hidden" value="{{ request.id }}" name="debt">
+                    </form>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button type="send" class="btn btn-danger">
+                            Deny
+                        </button>
+                        <input type="hidden" value="deny" name="answer_request">
+                        <input type="hidden" value="{{ request.id }}" name="debt">
+                    </form>
+                </div>
+            {% endfor %}
     </main>
 {% endblock %}

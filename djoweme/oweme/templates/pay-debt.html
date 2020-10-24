@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}
+Pay your debt!
+{% endblock %}
+
+{% block navigation %}
+    {% with "pay-debt" as active %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+    <main role="main" class="container text-center col-lg-5">
+        {% if to %}
+            {% if confirmed %}
+                Confirmed!
+                <br />
+                <a class="btn btn-primary mt-4" href="/">
+                    Return to Home
+                    <i class="fas fa-home"></i>
+                </a>
+            {% else %}
+                Asking {{ to }} for confirmation. Please ask {{ to }} to enter the website (they should have a notification in the home page).
+                <br />
+                <button class="btn btn-primary mt-4" onclick="window.location.reload();">
+                    Refresh Page
+                </button>
+            {% endif %}
+        {% else %}
+            {% for debt in debts %}
+                {% if debt.one == request.user %}
+                    <a class="btn btn-light" href="{{ request.path }}{{ debt.two }}">
+                        You owe {{ debt.two.get_full_name }} {{ debt.amount }}
+                {% else %}
+                    <a class="btn btn-light" href="{{ request.path }}{{ debt.one }}">
+                        You owe {{ debt.one.get_full_name }} {{ debt.amount|cut:"-" }}
+                {% endif %}
+                <i class="fas fa-coins"></i>
+                </a>
+            {% endfor %}
+        {% endif %}
+    </main>
+{% endblock %}

@@ -3,17 +3,53 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
 
-from .models import Coin, Payers, Debts
+from .models import Coin, Payers, Debts, PayDebt
 
 def home(request):
-    return render(request, "home.html", {})
+    pay_debt_requests = PayDebt.objects.filter(debt__one=request.user, debt__amount__lt=0) | PayDebt.objects.filter(debt__two=request.user, debt__amount__gt=0)
+
+    if request.method == "POST":
+        if "answer_request" in request.POST and "debt" in request.POST:
+            req = pay_debt_requests.filter(id=request.POST["debt"])
+            if req.exists():
+                req = req.first()
+                if request.POST["answer_request"] == "accept":
+                    req.debt.delete()
+                print(req.delete())
+        return redirect(request.path)
+
+    return render(request, "home.html", {
+        "pay_debt_requests": pay_debt_requests,
+    })
+
+def pay_debt(request, to=None):
+    debts = Debts.objects.filter(one=request.user, amount__gt=0) | Debts.objects.filter(two=request.user, amount__lt=0)
+
+    if to:
+        debt = Debts.objects.filter(one=request.user, two__username=to, amount__gt=0) | Debts.objects.filter(one__username=to, two=request.user, amount__lt=0)
+        if debt.exists():
+            debt = debt.first()
+            if not PayDebt.objects.filter(debt=debt):
+                paid = PayDebt(debt=debt)
+                paid.save()
+
+    return render(request, "pay-debt.html", {
+        "to": to,
+        "debts": debts,
+    })
 
 def purchase(request, group_name=None):
     if request.method == "POST":
         if "amount" in request.POST:
             new_coin = Coin(user=request.user, amount=float(request.POST["amount"]))
             new_coin.save()
-            return redirect(request.path)
+        if "coin" in request.POST:
+            matching_coins = Coin.objects.filter(user=request.user, amount=float(request.POST["coin"]))
+            if matching_coins.exists():
+                matching_coins.first().delete()
+        if "complete_purchase" in request.POST:
+            print("TBD")
+        return redirect(request.path)
 
     users = None
     users_with_coins = None
@@ -25,6 +61,8 @@ def purchase(request, group_name=None):
         if not request.user in users:
             payers.users.add(request.user)
             payers.save()
+
+        users = payers.users.all()
 
         debts_from_before = []
 
