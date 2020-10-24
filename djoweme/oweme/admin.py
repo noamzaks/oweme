@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Payers, Debts, Coin
+
+admin.site.register(Payers)
+admin.site.register(Debts)
+admin.site.register(Coin)

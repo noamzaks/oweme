@@ -21,6 +21,8 @@ Purchase
             Go!
         </button>
     {% else %}
-    Working on it!!!
+        {% for user in users %}
+            {{ user.coin_set.all }}
+        {% endfor %}
     {% endif %}
 {% endblock %}
