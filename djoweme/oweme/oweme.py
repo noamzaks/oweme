@@ -146,8 +146,25 @@ def newDebts(debtsForUser):
                         amount = min(abs(debtsForUser[userI]), abs(debtsForUser[userJ]))
                         
                         if amount!=0:
-                            newDebt = Debts(one=one, two=two, amount=amount)
-                            newDebt.save()
+                            db_debts = Debts.objects.filter(one=one,two=two)
+                            db_debts_2 = Debts.objects.filter(one=two,two=one)
+                            if db_debts:
+                                newDebt = db_debts = db_debts.first()
+                                db_debts.amount += decimal.Decimal(amount)
+                                if db_debts.amount == 0:
+                                    db_debts.delete()
+                                else:
+                                    db_debts.save()
+                            elif db_debts_2:
+                                newDebt = db_debts_2 = db_debts_2.first()
+                                db_debts_2.amount -= decimal.Decimal(amount)
+                                if db_debts_2.amount == 0:
+                                    db_debts_2.delete()
+                                else:
+                                    db_debts_2.save()
+                            else:
+                                newDebt = Debts(one=one, two=two, amount=amount)
+                                newDebt.save()
                             my_new_debts.append(newDebt)
                             # print(len(debts))
                             debtsForUser[one] -= amount
