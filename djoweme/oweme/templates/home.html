@@ -33,5 +33,17 @@ Owe Me
                     </form>
                 </div>
             {% endfor %}
+
+            {# if mini #}
+                <h2>A circle was detected.</h2>
+                {{ mini }} was reduced from:
+                <ul class="list-group">
+                {% for i in loop %}
+                    <li class="list-group-item bg-dark text-light">
+                        {{ i }}
+                    </li>
+                {% endfor %}
+                </ul>
+            {# endif #}
     </main>
 {% endblock %}

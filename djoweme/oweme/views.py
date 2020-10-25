@@ -20,6 +20,7 @@ def debts(request):
 
 def home(request):
     pay_debt_requests = None
+    mini,loop = None, None
     if request.user.is_authenticated:
         pay_debt_requests = PayDebt.objects.filter(two=request.user)
 
@@ -41,12 +42,13 @@ def home(request):
                             Debts(one=request.user, two=req.one, amount=-new_debt).save()
                         elif new_debt > 0:
                             Debts(one=req.one, two=request.user, amount=new_debt).save()
-                        fix(request.user, req.one)
-                    print(req.delete())
-            return redirect(request.path)
+                        mini,loop = fix(request.user, req.one)
+                    req.delete()
 
     return render(request, "home.html", {
         "pay_debt_requests": pay_debt_requests,
+        "mini": mini,
+        "loop": loop,
     })
 
 def pay_debt(request):

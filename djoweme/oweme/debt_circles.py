@@ -65,8 +65,8 @@ def remove_circle(loop):
         #print(i)
         t = fun(loop,i).first()
         if t:
-            #print(t)
-            #print(t.amount)
+            print(t)
+            print(t.amount)
             if t.amount == mini:
                 t.delete()
             else:
@@ -77,10 +77,13 @@ def remove_circle(loop):
         x.delete()
     else:
         x.save()
+        
+    return mini, loop
 
 
 def fix(one, two):
     test = eliminate(one, two, [])
     #print(test)
     if test:
-        remove_circle(test)
+        return remove_circle(test)
+    return None, None

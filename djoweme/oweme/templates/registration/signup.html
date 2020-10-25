@@ -9,11 +9,27 @@ Sign Up
         <h2>Sign Up</h2>
         <form method="POST">
             {% csrf_token %}
-            {% if form.errors %}
+            {% if form.errors.username %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.errors.username.as_text }}
+                </div>
+            {% endif %}
+            {% if form.errors.password1 %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.errors.password1.as_text }}
+                </div>
+            {% endif %}
+            {% if form.errors.password2 %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.errors.password2.as_text }}
+                </div>
+            {% endif %}
+            {% if form.non_field_errors %}
                 <div class="alert alert-danger" role="alert">
                     {{ form.non_field_errors.as_text }}
                 </div>
             {% endif %}
+            
             <input class="form-control" id="{{ form.username.id_for_label }}" maxlength="30" name="{{ form.username.html_name }}" placeholder="Username" type="text"required>
             <input class="form-control mt-2" id="{{ form.password1.id_for_label }}" maxlength="30" name="{{ form.password1.html_name }}" placeholder="Password" type="password" required>
             <input class="form-control mt-2" id="{{ form.password2.id_for_label }}" maxlength="30" name="{{ form.password2.html_name }}" placeholder="Confirm" type="password" required>
