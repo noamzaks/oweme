@@ -6,6 +6,7 @@ Login
 
 {% block content %}
     <main role="main" class="container text-center col-lg-3">
+        <h2>Login</h2>
         <form method="POST">
             {% csrf_token %}
             {% if form.errors %}
@@ -19,5 +20,8 @@ Login
                 Login
             </button>
         </form>
+        <a class="btn btn-light mt-4" href="/accounts/signup">
+            Not registered? Sign Up
+        </a>
     </main>
 {% endblock %}

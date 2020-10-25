@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}
+Debt View
+{% endblock %}
+
+{% block navigation %}
+    {% with "debts" as active %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+    <main role="main" class="container text-center col-lg-5">
+        <ul class="list-group">
+        {% for debt in debts %}
+            <li class="list-group-item bg-dark text-light mb-4">
+                {% if debt.one == request.user %}
+                    {% if debt.amount > 0 %}
+                        You owe {{ debt.two }} {{debt.amount}}
+                    {% else %}
+                        {{ debt.one }} owes you {{ debt.amount }}
+                    {% endif %}
+                {% else %}
+                    {% if debt.amount < 0 %}
+                        You owe {{ debt.one }} {{debt.amount}}
+                    {% else %}
+                        {{ debt.one }} owes you {{ debt.amount }}
+                    {% endif %}
+                {% endif %}
+                <i class="fas fa-coins"></i>
+            </li>
+        {% endfor %}
+        </ul>
+    </main>
+{% endblock %}

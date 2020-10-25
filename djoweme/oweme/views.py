@@ -6,6 +6,13 @@ from django.views import generic
 
 from .models import Coin, Payers, Debts, PayDebt
 
+def debts(request):
+    debts = Debts.objects.filter(one=request.user) | Debts.objects.filter(two=request.user)
+    
+    return render(request, "debts.html", {
+        "debts": debts,
+    })
+
 def home(request):
     pay_debt_requests = None
     if request.user.is_authenticated:
