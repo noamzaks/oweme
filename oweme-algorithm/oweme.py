@@ -153,7 +153,8 @@ def newDebts(debtsForUser):
                             two = userJ
                         amount = min(abs(debtsForUser[userI]), abs(debtsForUser[userJ]))
                         if amount!=0:
-                            my_new_debts.append(str(Debt(one, two, amount))) #deleate str just for test
+                            if str(Debt(one,two,amount)) not in my_new_debts:
+                                my_new_debts.append(str(Debt(one, two, amount))) #deleate str just for test
                             # print(len(debts))
     return my_new_debts
 
