@@ -1,3 +1,4 @@
+from oweme.debt_circles import fix
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -36,6 +37,7 @@ def home(request):
                             Debts(one=request.user, two=req.one, amount=-new_debt).save()
                         elif new_debt > 0:
                             Debts(one=req.one, two=request.user, amount=new_debt).save()
+                        fix(request.user, req.one)
                     print(req.delete())
             return redirect(request.path)
 
