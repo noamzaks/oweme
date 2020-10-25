@@ -8,17 +8,19 @@ Purchase Results
 {% endblock %}
 
 {% block content %}
-    {% for user, coins in x %}
-        <h2>{{ user }}</h2>
-        {% for coin in coins %}
-            <button class="btn btn-light mb-1" disabled>
-                {{ coin }}
-            </button>
+    <main role="main" class="container text-center col-lg-5">
+        {% for user, coins in x %}
+            <h2>{{ user }}</h2>
+            {% for coin in coins %}
+                <button class="btn btn-light mb-1" disabled>
+                    {{ coin }}
+                </button>
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
-    <br />
-    {% for debt in y %}
-        {{ debt.one }} owes {{ debt.two }} {{ debt.amount }}
-        <i class="fas fa-coins ml-1"></i>
-    {% endfor %}
+        <br />
+        {% for debt in y %}
+            {{ debt.one }} owes {{ debt.two }} {{ debt.amount }}
+            <i class="fas fa-coins ml-1"></i>
+        {% endfor %}
+    </main>
 {% endblock %}

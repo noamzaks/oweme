@@ -3,12 +3,14 @@ from oweme.debt_circles import fix
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.views import generic
 
 from .models import Coin, Payers, Debts, PayDebt, Bill
 from .oweme import howToPay
 
+@login_required(login_url="/accounts/login")
 def debts(request):
     debts = Debts.objects.filter(one=request.user) | Debts.objects.filter(two=request.user)
     
@@ -67,13 +69,14 @@ def pay_debt(request):
     return render(request, "pay-debt.html", {
         "sent": sent,
     })
-
+    
+@login_required(login_url="/accounts/login")
 def purchase(request, group_name=None):
     users = None
-    users_with_coins = None
+    users_with_coins = {}
     bills = None
     debts_from_before = None
-    bill_dict = None
+    bill_dict = {}
     if group_name and request.user.is_authenticated:
         payers = Payers.objects.get_or_create(name=group_name)[0]
 
@@ -125,7 +128,6 @@ def purchase(request, group_name=None):
                 matching_coins.first().delete()
         if "complete_purchase" in request.POST:
             x = howToPay(users, debts_from_before, users_with_coins, bill_dict)
-            print(x)
             for debt in debts_from_before:
                 debt.delete()
 
