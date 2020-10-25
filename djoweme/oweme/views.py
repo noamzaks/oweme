@@ -139,6 +139,7 @@ def purchase(request, group_name=None):
             return render(request, "after-purchase.html", {
                 "x": x[0].items(),
                 "y": x[1],
+                "z": x[2],
             })
         return redirect(request.path)
     

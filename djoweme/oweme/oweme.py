@@ -77,8 +77,7 @@ def howToPay(users, debts, wallets, bills):  # winningDebtsForUser is empty dict
             global my_new_debts
             my_new_debts = []
             winingDebts = newDebts(winningDebtsForUser)
-    print(str(winningDebtsForUser)+"---------")
-    return [winningOption, winingDebts]
+    return [winningOption, winingDebts[0], winingDebts[1]]
 
 
 def optionsToPayWithCoins(wallets, coinsToPay):
@@ -130,6 +129,7 @@ def calNewDebt(users, debtsForUser, optionToPay, bills):  # debtsForUser is dict
     return sumOfDebt
 
 
+
 def newDebts(debtsForUser):
     global my_new_debts
     for userI in debtsForUser:
@@ -152,7 +152,16 @@ def newDebts(debtsForUser):
                             # print(len(debts))
                             debtsForUser[one] -= amount
                             debtsForUser[two] += amount
-    return my_new_debts
+    m = maxList(list(debtsForUser.values()))
+    for user in debtsForUser.keys():
+        if debtsForUser[user] == m:
+            userGetExcess = user
+    for user in debtsForUser:
+        if user != userGetExcess and debtsForUser[user]:
+            newDebt = Debts(one=userGetExcess, two=user, amount=debtsForUser[user])
+            newDebt.save()
+            my_new_debts.append(newDebt)
+    return [my_new_debts, userGetExcess]
 
 
 def min(a, b):
@@ -180,3 +189,10 @@ def initDict(keys, value):
     for k in keys:
         d[k] = value
     return d
+
+def maxList(l):
+    m = l[0]
+    for i in l:
+        if i > m:
+            m = i
+    return m
