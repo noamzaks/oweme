@@ -12,7 +12,7 @@ Owe Me
             
             {% for pay_request in pay_debt_requests %}
                 <div class="alert alert-success mt-3" role="alert">
-                    {{ pay_request.one.get_full_name }} is requesting you to accept their payment of {{ pay_request.amount }} coins.
+                    {{ pay_request.one }} is requesting you to accept their payment of {{ pay_request.amount }} coins.
 
                     <form method="POST">
                         {% csrf_token %}

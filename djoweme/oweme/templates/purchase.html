@@ -46,7 +46,7 @@ Purchase
                 <tbody>
                     {% for user, coins in users %}
                         <tr>
-                            <th scope="row">{{ user.get_full_name }}</th>
+                            <th scope="row">{{ user }}</th>
                             <td>
                                 {% for coin in coins %}
                                     {% if user == request.user %}

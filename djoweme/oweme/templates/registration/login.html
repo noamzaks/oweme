@@ -1,12 +1,11 @@
 {% extends "base.html" %}
 
 {% block title %}
-Sign Up
+Login
 {% endblock %}
 
 {% block content %}
-  <main role="main" class="container text-center col-lg-3">
-        <h2>Sign Up</h2>
+    <main role="main" class="container text-center col-lg-3">
         <form method="POST">
             {% csrf_token %}
             {% if form.errors %}
@@ -15,10 +14,9 @@ Sign Up
                 </div>
             {% endif %}
             <input class="form-control" id="{{ form.username.id_for_label }}" maxlength="30" name="{{ form.username.html_name }}" placeholder="Username" type="text"required>
-            <input class="form-control mt-2" id="{{ form.password1.id_for_label }}" maxlength="30" name="{{ form.password1.html_name }}" placeholder="Password" type="password" required>
-            <input class="form-control mt-2" id="{{ form.password2.id_for_label }}" maxlength="30" name="{{ form.password2.html_name }}" placeholder="Confirm" type="password" required>
+            <input class="form-control mt-2" id="{{ form.password.id_for_label }}" maxlength="30" name="{{ form.password.html_name }}" placeholder="Password" type="password" required>
             <button type="submit" class="btn btn-light mt-2">
-                Sign Up
+                Login
             </button>
         </form>
     </main>
