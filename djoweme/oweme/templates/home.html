@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}
+Owe Me
+{% endblock %}
+
+{% block content %}
+    <main role="main" class="container text-center">
+            <h1>Owe Me</h1>
+            Paying for pizza. Together.
+            <br />
+            
+            {% for pay_request in pay_debt_requests %}
+                <div class="alert alert-success mt-3" role="alert">
+                    {{ pay_request.one }} is requesting you to accept their payment of {{ pay_request.amount }} coins.
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button type="send" class="btn btn-success mt-2 mb-2">
+                            Accept
+                        </button>
+                        <input type="hidden" value="accept" name="answer_request">
+                        <input type="hidden" value="{{ pay_request.id }}" name="debt">
+                    </form>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button type="send" class="btn btn-danger">
+                            Deny
+                        </button>
+                        <input type="hidden" value="deny" name="answer_request">
+                        <input type="hidden" value="{{ pay_request.id }}" name="debt">
+                    </form>
+                </div>
+            {% endfor %}
+    </main>
+{% endblock %}

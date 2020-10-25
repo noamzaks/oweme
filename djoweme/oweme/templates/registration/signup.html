@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}
+Sign Up
+{% endblock %}
+
+{% block content %}
+  <main role="main" class="container text-center col-lg-3">
+        <h2>Sign Up</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors.as_text }}
+                </div>
+            {% endif %}
+            <input class="form-control" id="{{ form.username.id_for_label }}" maxlength="30" name="{{ form.username.html_name }}" placeholder="Username" type="text"required>
+            <input class="form-control mt-2" id="{{ form.password1.id_for_label }}" maxlength="30" name="{{ form.password1.html_name }}" placeholder="Password" type="password" required>
+            <input class="form-control mt-2" id="{{ form.password2.id_for_label }}" maxlength="30" name="{{ form.password2.html_name }}" placeholder="Confirm" type="password" required>
+            <button type="submit" class="btn btn-light mt-2">
+                Sign Up
+            </button>
+        </form>
+        <a class="btn btn-light mt-4" href="/accounts/login">
+            Have a user? Sign in
+        </a>
+    </main>
+{% endblock %}
