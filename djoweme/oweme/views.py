@@ -1,3 +1,4 @@
+from django.http.response import HttpResponse
 from oweme.debt_circles import fix
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
@@ -5,7 +6,8 @@ from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.views import generic
 
-from .models import Coin, Payers, Debts, PayDebt
+from .models import Coin, Payers, Debts, PayDebt, Bill
+from .oweme import howToPay
 
 def debts(request):
     debts = Debts.objects.filter(one=request.user) | Debts.objects.filter(two=request.user)
@@ -67,20 +69,11 @@ def pay_debt(request):
     })
 
 def purchase(request, group_name=None):
-    if request.method == "POST":
-        if "amount" in request.POST:
-            new_coin = Coin(user=request.user, amount=float(request.POST["amount"]))
-            new_coin.save()
-        if "coin" in request.POST:
-            matching_coins = Coin.objects.filter(user=request.user, amount=float(request.POST["coin"]))
-            if matching_coins.exists():
-                matching_coins.first().delete()
-        if "complete_purchase" in request.POST:
-            print("TBD")
-        return redirect(request.path)
-
     users = None
     users_with_coins = None
+    bills = None
+    debts_from_before = None
+    bill_dict = None
     if group_name and request.user.is_authenticated:
         payers = Payers.objects.get_or_create(name=group_name)[0]
 
@@ -104,11 +97,53 @@ def purchase(request, group_name=None):
         for user in users:
             users_with_coins[user] = [ float(coin.amount) for coin in user.coin_set.all() ]
 
-        users_with_coins = users_with_coins.items()
 
+        bills = Bill.objects.filter(user__in=users)
+        
+        bill_dict = {}
+                
+        for bill in bills:
+            bill_dict[bill.user] = bill.value
+            
+    if request.method == "POST":
+        if "amount" in request.POST:
+            if "bill" not in request.POST:
+                new_coin = Coin(user=request.user, amount=float(request.POST["amount"]))
+                new_coin.save()
+            else:
+                bill = Bill.objects.filter(user=request.user)
+                if bill.exists():
+                    bill = bill.first()
+                    bill.value = float(request.POST["amount"])
+                    bill.save()
+                else:
+                    new_bill = Bill(user=request.user, value=float(request.POST["amount"]))
+                    new_bill.save()
+        if "coin" in request.POST:
+            matching_coins = Coin.objects.filter(user=request.user, amount=float(request.POST["coin"]))
+            if matching_coins.exists():
+                matching_coins.first().delete()
+        if "complete_purchase" in request.POST:
+            x = howToPay(users, debts_from_before, users_with_coins, bill_dict)
+            print(x)
+            for debt in debts_from_before:
+                debt.delete()
+
+            Coin.objects.filter(user__in=users).delete()
+            
+            if x == -1:
+                return HttpResponse("<h1>Yer be broke, bros!</h1>")
+            
+            return render(request, "after-purchase.html", {
+                "x": x[0].items(),
+                "y": x[1],
+            })
+        return redirect(request.path)
+    
     return render(request, "purchase.html", {
         "group_name": group_name,
-        "users": users_with_coins,
+        "users": users_with_coins.items(),
+        "bill_dict": bill_dict.items(),
     })
 
 class SignUpView(generic.CreateView):

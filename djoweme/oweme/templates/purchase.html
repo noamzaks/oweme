@@ -41,6 +41,7 @@ Purchase
                     <tr>
                     <th scope="col">User</th>
                     <th scope="col">Coins</th>
+                    <th scope="col">Bill</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,18 +66,34 @@ Purchase
                                     {% endif %}
                                 {% endfor %}
                             </td>
+                            <td>
+                                {% for xuser, val in bill_dict %}
+                                    {% if xuser == user %}
+                                        {{ val }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
 
-            <form method="POST" class="mt-2 container col-lg-3">
+            <form method="POST" class="mt-2 container col-lg-4">
                 {% csrf_token %}
                 <input class="form-control mb-2" type="number" step=0.01 name="amount" placeholder="Amount" required>
                 <button type="submit" class="btn btn-dark w-100">
                     Add Coin
                     <i class="fas fa-coins ml-1"></i>
                 </button>
+            </form>
+
+            <form method="POST" class="mt-2 container col-lg-4">
+                {% csrf_token %}
+                <input class="form-control mb-2" type="number" step=0.01 name="amount" placeholder="Amount" required>
+                <button type="submit" class="btn btn-dark w-100">
+                    Set Bill
+                </button>
+                <input type="hidden" value="bill" name="bill">
             </form>
 
             <form method="POST">

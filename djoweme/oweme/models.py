@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.fields.related import ForeignKey
 
 # Create your models here.
 class Payers(models.Model):
@@ -11,6 +12,10 @@ class Payers(models.Model):
     
     def __str__(self):
         return self.name
+
+class Bill(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    value = models.DecimalField(decimal_places=5, max_digits=10)
 
 class Coin(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
