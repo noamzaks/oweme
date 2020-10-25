@@ -137,8 +137,9 @@ def calNewDebt(users, debtsForUser, optionToPay, bills):  # debtsForUser is dict
     return sumOfDebt
 
 
+my_new_debts = []
 def newDebts(debtsForUser):
-    debts = []
+    global my_new_debts
     for userI in debtsForUser:
         if debtsForUser[userI] != 0:
             for userJ in debtsForUser:
@@ -152,13 +153,9 @@ def newDebts(debtsForUser):
                             two = userJ
                         amount = min(abs(debtsForUser[userI]), abs(debtsForUser[userJ]))
                         if amount!=0:
-                            print(Debt(one, two, amount))
-                            debts += [(str(Debt(one, two, amount)))] #deleate str just for test
-                            print(debts)
+                            my_new_debts.append(str(Debt(one, two, amount))) #deleate str just for test
                             # print(len(debts))
-                        debtsForUser[one] -= amount
-                        debtsForUser[two] += amount
-    return debts
+    return my_new_debts
 
 
 def min(a, b):
