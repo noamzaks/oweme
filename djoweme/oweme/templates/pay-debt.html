@@ -12,30 +12,24 @@ Pay your debt!
 
 {% block content %}
     <main role="main" class="container text-center col-lg-3">
-        {% if to %}
-            {% if confirmed %}
-                Confirmed!
-                <br />
-                <a class="btn btn-primary mt-4" href="/">
-                    Return to Home
-                    <i class="fas fa-home"></i>
-                </a>
+        {% if sent != None %}
+            {% if sent %}
+                <div class="alert alert-success" role="alert">
+                    Request sent. Please ask your friend to accept it.
+                </div>
             {% else %}
-                Asking {{ to }} for confirmation. Please ask {{ to }} to enter the website (they should have a notification in the home page).
-                <br />
-                <button class="btn btn-primary mt-4" onclick="window.location.reload();">
-                    Refresh Page
-                </button>
+                <div class="alert alert-danger" role="alert">
+                    There was an issue with your request. Please try again.
+                </div>
             {% endif %}
-        {% else %}
-            <form method="POST">
-                {% csrf_token %}
-                <input class="form-control" type="text" placeholder="User" name="user" required>
-                <input class="form-control mt-2" type="number" step=0.01 placeholder="Amount" name="amount" required>
-                <button type="submit" class="btn btn-light mt-2">
-                    Pay
-                </button>
-            </form>
         {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <input class="form-control" type="text" placeholder="User" name="user" required>
+            <input class="form-control mt-2" type="number" step=0.01 placeholder="Amount" name="amount" required>
+            <button type="submit" class="btn btn-light mt-2">
+                Pay
+            </button>
+        </form>
     </main>
 {% endblock %}

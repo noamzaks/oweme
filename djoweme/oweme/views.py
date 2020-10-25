@@ -7,29 +7,54 @@ from django.views import generic
 from .models import Coin, Payers, Debts, PayDebt
 
 def home(request):
-    pay_debt_requests = PayDebt.objects.filter(debt__one=request.user, debt__amount__lt=0) | PayDebt.objects.filter(debt__two=request.user, debt__amount__gt=0)
+    pay_debt_requests = None
+    if request.user.is_authenticated:
+        pay_debt_requests = PayDebt.objects.filter(two=request.user)
 
-    if request.method == "POST":
-        if "answer_request" in request.POST and "debt" in request.POST:
-            req = pay_debt_requests.filter(id=request.POST["debt"])
-            if req.exists():
-                req = req.first()
-                if request.POST["answer_request"] == "accept":
-                    req.debt.delete()
-                print(req.delete())
-        return redirect(request.path)
+        if request.method == "POST":
+            if "answer_request" in request.POST and "debt" in request.POST:
+                req = pay_debt_requests.filter(id=request.POST["debt"])
+                if req.exists():
+                    req = req.first()
+                    if request.POST["answer_request"] == "accept":
+                        debts = Debts.objects.filter(one=request.user, two=req.one) | Debts.objects.filter(one=req.one, two=request.user)
+                        new_debt = -req.amount
+                        for debt in debts:
+                            if debt.one == request.user:
+                                new_debt -= debt.amount
+                            else:
+                                new_debt += debt.amount
+                        debts.delete()
+                        if new_debt < 0:
+                            Debts(one=request.user, two=req.one, amount=-new_debt).save()
+                        elif new_debt > 0:
+                            Debts(one=req.one, two=request.user, amount=new_debt).save()
+                    print(req.delete())
+            return redirect(request.path)
 
     return render(request, "home.html", {
         "pay_debt_requests": pay_debt_requests,
     })
 
-def pay_debt(request, to=None):
-    if to:
-        if not PayDebt.objects.filter(one=request.user, two__username=to).exists():
-            pay_debt = PayDebt(one=request.user, two=User.objects.get(username=to), amount=request.POST["amount"])
+def pay_debt(request):
+    if request.method == "POST":
+        success = True
+        if "user" in request.POST and "amount" in request.POST:
+            to = request.POST["user"]
+            user = User.objects.filter(username=to)
+            if user.exists():
+                user = user.first()
+                if not PayDebt.objects.filter(one=request.user, two=user).exists():
+                    PayDebt(one=request.user, two=user, amount=request.POST["amount"]).save()
+                    success = True
+        return redirect(request.path + f"?success={success}")
+
+    sent = None
+    if "success" in request.GET:
+        sent = request.GET["success"]
 
     return render(request, "pay-debt.html", {
-        "to": to,
+        "sent": sent,
     })
 
 def purchase(request, group_name=None):
