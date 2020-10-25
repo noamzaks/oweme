@@ -8,6 +8,9 @@ class Debt:
         self.two = two
         self.amount = amount
 
+    def __str__(self):
+        return str(self.one) + "--"+str(self.amount)+"-->" + str(self.two)
+
 
 # temp for test
 
@@ -29,10 +32,10 @@ def minExcessRec(coins, price, usedCoins):
     a = minExcessRec(coins[1:len(coins)], price - coins[0], usedCoins)
     usedCoins.pop()
     b = minExcessRec(coins[1:len(coins)], price, usedCoins)
-    return min(a, b)
+    return minUnitListed(a, b)
 
 
-def min(a, b):
+def minUnitListed(a, b):
     if a[0] == b[0]:
         unitSortedLists(a[1], b[1])
     if a[0] <= b[0]:
@@ -53,8 +56,9 @@ def unitSortedLists(lists1, lists2):
             lists1.append(l2)
 
 
-def howToPay(users, debts, wallets, bills):
+def howToPay(users, debts, wallets, bills):  # winningDebtsForUser is empty dict
     winningOption = dict()
+    winningDebtsForUserTest = dict()
     allCoins = []
     minDebt = 999999  # change to max int
     for coins in wallets.values():
@@ -78,7 +82,10 @@ def howToPay(users, debts, wallets, bills):
         if temp < minDebt:
             minDebt = temp
             winningOption = option
-    return winningOption
+            winningDebtsForUser = newDebtsForUser(users, debtsForUser, winningOption, bills)
+            winingDebts = newDebts(winningDebtsForUser)
+    print(str(winningDebtsForUser)+"---------")
+    return [winningOption, winingDebts]
 
 
 def optionsToPayWithCoins(wallets, coinsToPay):
@@ -110,9 +117,14 @@ def optionsToPayWithCoinsRec(wallets, coinsToPay, newWallets, options):  # newWa
         return
 
 
-# ----for testing
-walletsTest = {"a": [20, 20], "b": [10, 50], "c": [20, 50, 100]}
-coinsTest = [20, 50, 50]
+def newDebtsForUser(users, debtsForUser, optionToPay, bills):
+    re = initDict(users, 0)
+    for user in users:
+        paid = 0
+        for coin in optionToPay[user]:
+            paid += coin
+        re[user] += paid - bills[user] - debtsForUser[user]
+    return copy.deepcopy(re)
 
 
 def calNewDebt(users, debtsForUser, optionToPay, bills):  # debtsForUser is dict per user how meny dolars owe users
@@ -125,10 +137,48 @@ def calNewDebt(users, debtsForUser, optionToPay, bills):  # debtsForUser is dict
     return sumOfDebt
 
 
+def newDebts(debtsForUser):
+    debts = []
+    for userI in debtsForUser:
+        if debtsForUser[userI] != 0:
+            for userJ in debtsForUser:
+                if debtsForUser[userJ] != 0:
+                    if sign(debtsForUser[userI]) != sign(debtsForUser[userJ]):
+                        if debtsForUser[userI] < debtsForUser[userJ]:
+                            one = userJ
+                            two = userI
+                        else:
+                            one = userI
+                            two = userJ
+                        amount = min(abs(debtsForUser[userI]), abs(debtsForUser[userJ]))
+                        if amount!=0:
+                            print(Debt(one, two, amount))
+                            debts += [(str(Debt(one, two, amount)))] #deleate str just for test
+                            print(debts)
+                            # print(len(debts))
+                        debtsForUser[one] -= amount
+                        debtsForUser[two] += amount
+    return debts
+
+
+def min(a, b):
+    if (a < b):
+        return a
+    return b
+
+
 def abs(a):
     if a > 0:
         return a
     return -a
+
+
+def sign(a):
+    if a > 0:
+        return 1
+    if a < 0:
+        return -1
+    return 0
 
 
 def initDict(keys, value):
@@ -140,7 +190,7 @@ def initDict(keys, value):
 
 print("finel Test")
 userTest = ['a', 'b', 'c']
-debtsTest = [Debt('b', 'a', 30), Debt('c', 'a', 20)]
+debtsTest = [Debt('b', 'a', -30), Debt('c', 'a', 20),]
 walletsTest = {"a": [20, 20], "b": [10, 50], "c": [20, 50, 100]}
-billsTest = {"a": 50, "b": 40, "c": 35}
+billsTest = {"a": 50, "b": 40, "c": 30}
 print(howToPay(userTest, debtsTest, walletsTest, billsTest))
