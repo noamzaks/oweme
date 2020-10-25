@@ -1,6 +1,5 @@
 import copy
 
-
 # temp for test
 class Debt:
     def __init__(self, one, two, amount):
@@ -13,6 +12,7 @@ class Debt:
 
 
 # temp for test
+my_new_debts = []
 
 def minExcess(coins, price):
     if sum(coins) < price:
@@ -83,6 +83,8 @@ def howToPay(users, debts, wallets, bills):  # winningDebtsForUser is empty dict
             minDebt = temp
             winningOption = option
             winningDebtsForUser = newDebtsForUser(users, debtsForUser, winningOption, bills)
+            global my_new_debts
+            my_new_debts = []
             winingDebts = newDebts(winningDebtsForUser)
     print(str(winningDebtsForUser)+"---------")
     return [winningOption, winingDebts]
@@ -137,9 +139,10 @@ def calNewDebt(users, debtsForUser, optionToPay, bills):  # debtsForUser is dict
     return sumOfDebt
 
 
-my_new_debts = []
 def newDebts(debtsForUser):
     global my_new_debts
+    print("Hi")
+    print(debtsForUser)
     for userI in debtsForUser:
         if debtsForUser[userI] != 0:
             for userJ in debtsForUser:
@@ -152,10 +155,13 @@ def newDebts(debtsForUser):
                             one = userI
                             two = userJ
                         amount = min(abs(debtsForUser[userI]), abs(debtsForUser[userJ]))
+                        
                         if amount!=0:
-                            if str(Debt(one,two,amount)) not in my_new_debts:
-                                my_new_debts.append(str(Debt(one, two, amount))) #deleate str just for test
+                            if str(Debt(two,one,amount)) not in my_new_debts:
+                                my_new_debts.append(str(Debt(two, one, amount))) #deleate str just for test
                             # print(len(debts))
+                            debtsForUser[one] -= amount
+                            debtsForUser[two] += amount
     return my_new_debts
 
 
@@ -188,7 +194,7 @@ def initDict(keys, value):
 
 print("finel Test")
 userTest = ['a', 'b', 'c']
-debtsTest = [Debt('b', 'a', -30), Debt('c', 'a', 20),]
+debtsTest = [Debt('b', 'a', 20), Debt('c', 'a', 15),]
 walletsTest = {"a": [20, 20], "b": [10, 50], "c": [20, 50, 100]}
 billsTest = {"a": 50, "b": 40, "c": 30}
 print(howToPay(userTest, debtsTest, walletsTest, billsTest))
